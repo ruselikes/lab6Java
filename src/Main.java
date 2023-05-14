@@ -63,11 +63,11 @@ class DemonstrationWindow extends Frame implements Observer, ActionListener, Ite
         inputField.setBounds(160,250, 150,20);
         ControlPanel.add(inputField);
 
-        // список типа фигуры
-        figureChoice = new Choice();
-        figureChoice.addItemListener(this);
-        figureChoice.setBounds(100,135, 150,20);
-        ControlPanel.add(figureChoice);
+        // список номера фигуры
+//        figureChoice = new Choice();
+//        figureChoice.addItemListener(this);
+//        figureChoice.setBounds(100,135, 150,20);
+//        ControlPanel.add(figureChoice);
         // список цветов
         colorChoice = new Choice(); // цвета фигуры
         colorChoice.addItem("Синий");
@@ -136,7 +136,7 @@ class DemonstrationWindow extends Frame implements Observer, ActionListener, Ite
     public void update(Observable o, Object arg) {
         MyFigure figure = (MyFigure)arg;
 
-        System.out.println ("x= " + figure.thr.getName() + figure.x);
+//        System.out.println ("x= " + figure.thr.getName() + figure.x);
         repaint();
     }
     public void paint (Graphics g) {
@@ -200,7 +200,7 @@ class DemonstrationWindow extends Frame implements Observer, ActionListener, Ite
                 LL.add(figure);
                 figure.addObserver(this);
                 ballCount++;
-                figureChoice.add(Integer.valueOf(figure.Id).toString());
+//                figureChoice.add(Integer.valueOf(figure.Id).toString());
 
 
             }

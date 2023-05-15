@@ -3,6 +3,7 @@ import java.util.*;
 import java.util.LinkedList;
 import java.awt.*;
 import java.awt.event.*;
+import static java.lang.Math.*;
 public class Main {
     static int count;
     public static void main(String[] args){
@@ -12,6 +13,7 @@ public class Main {
 }
 class DemonstrationWindow extends Frame implements Observer, ActionListener, ItemListener {
     private LinkedList LL = new LinkedList();
+
     private Frame ControlPanel;
     private Button StartBtn;
     private Button ChangeBtn;
@@ -26,28 +28,28 @@ class DemonstrationWindow extends Frame implements Observer, ActionListener, Ite
 
     private TextField inputField;
     private TextField chooseNumberField,newNumberField;
-    private static int[] speedArray = new int[] {8, 12, 15, 18, 22, 25};
+
 
     private void InitControlPanel()
     {
         ControlPanel = new Frame();
-        ControlPanel.setSize(new Dimension(800,500));
+        ControlPanel.setSize(new Dimension(400,300));
         ControlPanel.setResizable(false);
         ControlPanel.setTitle("Управляющее окно");
         ControlPanel.setLayout(null);
         ControlPanel.addWindowListener(new WindowAdapter2());
 
         chooseNumberField = new TextField();
-        chooseNumberField.setBounds(160,80, 50,20);
+        chooseNumberField.setBounds(100,80, 50,20);
         ControlPanel.add(chooseNumberField, new Point(20,20));
 
         newNumberField = new TextField();
-        newNumberField.setBounds(210,80, 50,20);
+        newNumberField.setBounds(160,80, 50,20);
         ControlPanel.add(newNumberField, new Point(20,20));
 
-        StartBtn = new Button("Пуск");
+        StartBtn = new Button("Полетели");
         StartBtn.setSize(new Dimension(20,40));
-        StartBtn.setActionCommand("OK");
+        StartBtn.setActionCommand("Start");
         StartBtn.addActionListener(this);
         ControlPanel.add(StartBtn, new Point(20,20));
         StartBtn.setBounds(320,250, 50,20);
@@ -60,7 +62,7 @@ class DemonstrationWindow extends Frame implements Observer, ActionListener, Ite
         ControlPanel.add(ChangeBtn, new Point(20,20));
 
         inputField = new TextField();
-        inputField.setBounds(160,250, 150,20);
+        inputField.setBounds(100,250, 150,20);
         ControlPanel.add(inputField);
 
         // список номера фигуры
@@ -101,12 +103,12 @@ class DemonstrationWindow extends Frame implements Observer, ActionListener, Ite
         newspeedChoice.addItem("10");
         newspeedChoice.addItem("5");
         newspeedChoice.addItem("1");
-        newspeedChoice.setBounds(160,230, 150,20);
+        newspeedChoice.setBounds(100,230, 150,20);
         ControlPanel.add(newspeedChoice);
 
         updateNumBtn = new Button("Обновить номер");
         updateNumBtn.setActionCommand("Обновить номер");
-        updateNumBtn.setBounds(20,300, 100,20);
+        updateNumBtn.setBounds(220,80, 100,20);
         updateNumBtn.addActionListener(this);
         ControlPanel.add(updateNumBtn);
 
@@ -117,7 +119,7 @@ class DemonstrationWindow extends Frame implements Observer, ActionListener, Ite
         textChoice.addItem("T3");
         textChoice.addItem("T4");
         textChoice.addItem("T5");
-        textChoice.setBounds(160,100, 150,20);
+        textChoice.setBounds(100,100, 150,20);
         ControlPanel.add(textChoice);
 
         ControlPanel.setVisible(true);
@@ -162,16 +164,16 @@ class DemonstrationWindow extends Frame implements Observer, ActionListener, Ite
     private int GetFigureType(String textFromControlPanel){
         switch (textFromControlPanel)
         {
-            case "овал": return 1;
-            case "прямоугольник": return 2;
+            case "круг": return 1;
+            case "квадрат": return 2;
             default: return -1;
         }
     }
 
     public void actionPerformed (ActionEvent aE) {
         String str = aE.getActionCommand();
-        if (str.equals ("OK")){
-            if (ballCount >= 3) {
+        if (str.equals ("Start")){
+            if (Main.count >= 3) {
                 StartBtn.setEnabled(false); // Делаем кнопку неактивной
                 System.out.println("Кол-во объектов превышено");
                 return; // Прекращаем выполнение метода
@@ -204,6 +206,7 @@ class DemonstrationWindow extends Frame implements Observer, ActionListener, Ite
 
 
             }
+            else{System.out.println("Такой фигуры нет");}
 
         } else if (str.equals("Изменить скорость")) {
 
@@ -240,6 +243,7 @@ class DemonstrationWindow extends Frame implements Observer, ActionListener, Ite
     }
 }
 class MyFigure extends Observable implements Runnable {
+
     private static Random random = new Random();
 
     Thread thr;
@@ -248,9 +252,8 @@ class MyFigure extends Observable implements Runnable {
     private boolean yplus = false;
 
     public int speed;
-    private int incrementX;
-    private int incrementY;
-
+    int incrementX;
+    double incrementY;
     public int Id;
     public int type;
     int x; int y;
@@ -262,20 +265,24 @@ class MyFigure extends Observable implements Runnable {
         mainFrame = f;
 
         xplus = true; yplus = true;
+        this.speed = speed/2;
+        while (incrementX==0){
+        incrementX = random.nextInt(10);}
 
-        x = 20; y = 30; // начальные координаты
-//        incrementX = random.nextInt(3);
+        incrementY = Math.sqrt(speed * speed - incrementX * incrementX);
 //        incrementY = random.nextInt(3);
-//
-//        if (incrementX == 0) incrementY++;
-//        if (incrementY == 0) incrementX++;
+
+
+        if (incrementY == 0) incrementX++;
+        x = 20; y = 30; // начальные координаты
+
 
         this.type = figureType;
         this.col = col;
         Id = ++Main.count;
         thr = new Thread(this,Main.count+":"+ Id +":");
         thr.start();
-        this.speed = speed;
+
     }
     public void run(){
         while (true){
@@ -288,10 +295,8 @@ class MyFigure extends Observable implements Runnable {
 //
 //            if(xplus) x+=incrementX; else x-=incrementX;
 //            if(yplus) y+=incrementY; else y-=incrementY;
-            if (xplus) x += speed;
-            else x -= speed;
-            if (yplus) y += speed;
-            else y -= speed;
+            if (xplus) x += incrementX;else x -= incrementX;
+            if (yplus) y += incrementY;else y -= incrementY;
 
             setChanged();notifyObservers (this);
             try{Thread.sleep (10);}
